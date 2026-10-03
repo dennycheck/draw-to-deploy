@@ -1040,6 +1040,10 @@ html&gt;body{padding:0}&lt;/style&gt;
     #drawing-calibration .range-panels {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:16px}
     #drawing-calibration .range-panels section {min-width:0}
     #drawing-calibration .play-surface {display:block;width:100%;height:340px}
+    #drawing-calibration .drawing-surface {position:relative}
+    #drawing-calibration .stroke-feedback {position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:8px;pointer-events:none;opacity:0;color:var(--foreground)}
+    #drawing-calibration .stroke-feedback[data-outcome=&quot;failure&quot;] {color:var(--red)}
+    #drawing-calibration .feedback-symbol {font-size:64px;line-height:1;background:var(--card);border-radius:50%;width:88px;height:88px;display:grid;place-items:center}
     @media(max-width:650px){#drawing-calibration .range-panels{grid-template-columns:1fr}#drawing-calibration .play-surface{height:300px}}
   &lt;/style&gt;
   &lt;div class=&quot;viz-controls&quot;&gt;
@@ -1050,13 +1054,14 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;/div&gt;
   &lt;div class=&quot;range-panels&quot;&gt;&lt;section aria-label=&quot;Drawing panel&quot;&gt;
   &lt;h3&gt;Draw to deploy&lt;/h3&gt;
-  &lt;div class=&quot;card&quot; style=&quot;margin-top:12px&quot;&gt;
+  &lt;div class=&quot;card drawing-surface&quot; style=&quot;margin-top:12px&quot;&gt;
     &lt;svg id=&quot;dc-pad&quot; class=&quot;play-surface&quot; viewBox=&quot;0 0 400 340&quot; role=&quot;img&quot; aria-label=&quot;Drawing pad. Trace the circle or triangle in one stroke using a mouse, pen, or finger.&quot; style=&quot;touch-action:none;user-select:none;cursor:crosshair&quot;&gt;
       &lt;path id=&quot;dc-band&quot; fill=&quot;none&quot; stroke=&quot;var(--muted-foreground)&quot; stroke-width=&quot;22&quot; opacity=&quot;0.10&quot;/&gt;
       &lt;path id=&quot;dc-template&quot; fill=&quot;none&quot; stroke=&quot;var(--muted-foreground)&quot; stroke-width=&quot;1.5&quot;/&gt;
       &lt;path id=&quot;dc-ink&quot; fill=&quot;none&quot; stroke=&quot;var(--viz-series-1)&quot; stroke-width=&quot;3.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;
       &lt;circle id=&quot;dc-start&quot; r=&quot;4&quot; fill=&quot;var(--foreground)&quot; visibility=&quot;hidden&quot;/&gt;
     &lt;/svg&gt;
+    &lt;div id=&quot;dc-stroke-feedback&quot; class=&quot;stroke-feedback&quot; aria-hidden=&quot;true&quot;&gt;&lt;span id=&quot;dc-feedback-symbol&quot; class=&quot;feedback-symbol&quot;&gt;&lt;/span&gt;&lt;span id=&quot;dc-feedback-label&quot;&gt;&lt;/span&gt;&lt;/div&gt;
   &lt;/div&gt;
   &lt;div class=&quot;viz-row&quot; style=&quot;margin-top:14px;justify-content:space-between&quot; aria-live=&quot;polite&quot;&gt;&lt;strong id=&quot;dc-result&quot;&gt;Ready to draw&lt;/strong&gt;&lt;span class=&quot;tabular-nums&quot; id=&quot;dc-summary&quot;&gt;Pass: 60 / 100&lt;/span&gt;&lt;/div&gt;
   &lt;div class=&quot;progress&quot; role=&quot;progressbar&quot; aria-label=&quot;Drawing accuracy&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot; aria-valuenow=&quot;0&quot; style=&quot;margin-top:10px&quot;&gt;&lt;div id=&quot;dc-bar&quot; class=&quot;progress-bar&quot; style=&quot;width:0%&quot;&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1117,6 +1122,14 @@ function tick(now){
 }
 new ResizeObserver(layoutRange).observe(arena);layoutRange();
 let shape=&#x27;circle&#x27;, template=[], expected=0, points=[], active=null, started=0;
+let feedbackAnimation=null;
+function dismissStrokeFeedback(){if(feedbackAnimation){feedbackAnimation.cancel();feedbackAnimation=null;}$(&#x27;#dc-stroke-feedback&#x27;).style.opacity=&#x27;0&#x27;;}
+function finishStroke(pass){
+ points=[];$(&#x27;#dc-ink&#x27;).setAttribute(&#x27;d&#x27;,&#x27;&#x27;);$(&#x27;#dc-start&#x27;).setAttribute(&#x27;visibility&#x27;,&#x27;hidden&#x27;);
+ dismissStrokeFeedback();const overlay=$(&#x27;#dc-stroke-feedback&#x27;);overlay.dataset.outcome=pass?&#x27;success&#x27;:&#x27;failure&#x27;;
+ $(&#x27;#dc-feedback-symbol&#x27;).textContent=pass?&#x27;✓&#x27;:&#x27;×&#x27;;$(&#x27;#dc-feedback-label&#x27;).textContent=pass?&#x27;Deployed&#x27;:&#x27;Try again&#x27;;
+ feedbackAnimation=overlay.animate(reduced?[{opacity:1},{opacity:1,offset:.85},{opacity:0}]:[{opacity:0,transform:&#x27;scale(.85)&#x27;},{opacity:1,transform:&#x27;scale(1)&#x27;,offset:.15},{opacity:1,transform:&#x27;scale(1)&#x27;,offset:.6},{opacity:0,transform:&#x27;scale(1.06)&#x27;}],{duration:700,easing:&#x27;ease-out&#x27;,fill:&#x27;none&#x27;});
+}
 const dist=(a,b)=&gt;Math.hypot(a.x-b.x,a.y-b.y);
 const path=ps=&gt;ps.map((p,i)=&gt;(i?&#x27;L&#x27;:&#x27;M&#x27;)+p.x.toFixed(2)+&#x27;,&#x27;+p.y.toFixed(2)).join(&#x27; &#x27;);
 function resample(ps,step=3){
@@ -1124,7 +1137,7 @@ function resample(ps,step=3){
  for(let i=1;i&lt;ps.length;i++){let a={...ps[i-1]},b=ps[i],d=dist(a,b);while(d+carry&gt;=step&amp;&amp;d&gt;0){let t=(step-carry)/d;a={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};out.push(a);d=dist(a,b);carry=0;}carry+=d;}
  if(dist(out[out.length-1],ps[ps.length-1])&gt;0.01)out.push(ps[ps.length-1]);return out;
 }
-function reset(){points=[];$(&#x27;#dc-ink&#x27;).setAttribute(&#x27;d&#x27;,&#x27;&#x27;);$(&#x27;#dc-start&#x27;).setAttribute(&#x27;visibility&#x27;,&#x27;hidden&#x27;);$(&#x27;#dc-result&#x27;).textContent=&#x27;Ready to draw&#x27;;$(&#x27;#dc-summary&#x27;).textContent=&#x27;Pass: 60 / 100&#x27;;$(&#x27;#dc-feedback&#x27;).textContent=&#x27;Trace the template in one stroke. Start anywhere.&#x27;;$(&#x27;#dc-details&#x27;).textContent=&#x27;&#x27;;$(&#x27;#dc-bar&#x27;).style.width=&#x27;0%&#x27;;$(&#x27;.progress&#x27;).setAttribute(&#x27;aria-valuenow&#x27;,&#x27;0&#x27;);}
+function reset(){dismissStrokeFeedback();points=[];$(&#x27;#dc-ink&#x27;).setAttribute(&#x27;d&#x27;,&#x27;&#x27;);$(&#x27;#dc-start&#x27;).setAttribute(&#x27;visibility&#x27;,&#x27;hidden&#x27;);$(&#x27;#dc-result&#x27;).textContent=&#x27;Ready to draw&#x27;;$(&#x27;#dc-summary&#x27;).textContent=&#x27;Pass: 60 / 100&#x27;;$(&#x27;#dc-feedback&#x27;).textContent=&#x27;Trace the template in one stroke. Start anywhere.&#x27;;$(&#x27;#dc-details&#x27;).textContent=&#x27;&#x27;;$(&#x27;#dc-bar&#x27;).style.width=&#x27;0%&#x27;;$(&#x27;.progress&#x27;).setAttribute(&#x27;aria-valuenow&#x27;,&#x27;0&#x27;);}
 function setup(){
  let ps=[];if(shape===&#x27;circle&#x27;){for(let i=0;i&lt;=240;i++){let t=i/240*Math.PI*2;ps.push({x:200+110*Math.cos(t),y:170+110*Math.sin(t)});}}else ps=[{x:200,y:48},{x:326,y:278},{x:74,y:278},{x:200,y:48}];
  expected=ps.slice(1).reduce((n,p,i)=&gt;n+dist(p,ps[i]),0);template=resample(ps);let d=path(ps);$(&#x27;#dc-template&#x27;).setAttribute(&#x27;d&#x27;,d);$(&#x27;#dc-band&#x27;).setAttribute(&#x27;d&#x27;,d);reset();
@@ -1132,7 +1145,7 @@ function setup(){
 function nearest(p,ps){let m=Infinity;for(const q of ps)m=Math.min(m,dist(p,q));return m;}
 function evaluate(){
  const elapsed=(performance.now()-started)/1000;const samples=resample(points),length=points.slice(1).reduce((n,p,i)=&gt;n+dist(p,points[i]),0);
- if(samples.length&lt;8||length&lt;50){$(&#x27;#dc-result&#x27;).textContent=&#x27;Too short · Try again&#x27;;$(&#x27;#dc-summary&#x27;).textContent=&#x27;0 / 100&#x27;;$(&#x27;#dc-feedback&#x27;).textContent=&#x27;Draw the whole shape in one continuous stroke.&#x27;;return;}
+ if(samples.length&lt;8||length&lt;50){$(&#x27;#dc-result&#x27;).textContent=&#x27;Too short · Try again&#x27;;$(&#x27;#dc-summary&#x27;).textContent=&#x27;0 / 100&#x27;;$(&#x27;#dc-feedback&#x27;).textContent=&#x27;Draw the whole shape in one continuous stroke.&#x27;;finishStroke(false);return;}
  const errors=samples.map(p=&gt;nearest(p,template));const coverErrors=template.map(p=&gt;nearest(p,samples));
  const rms=Math.sqrt(errors.reduce((s,e)=&gt;s+e*e,0)/errors.length);const coverage=coverErrors.filter(e=&gt;e&lt;=20).length/coverErrors.length;
  const gap=dist(points[0],points[points.length-1]);const ratio=length/expected;
@@ -1148,6 +1161,7 @@ function evaluate(){
  let feedback=pass?&#x27;Deployed automatically. Draw again to send another.&#x27;:gap&gt;40?&#x27;Close the gap: finish near your starting point.&#x27;:ratio&gt;1.35?&#x27;Use one clean outline; avoid retracing or extra loops.&#x27;:coverage&lt;0.85?&#x27;Complete the entire outline, including every corner.&#x27;:rms&gt;13?&#x27;Stay closer to the template; stray sections reduce accuracy.&#x27;:&#x27;Keep the line closer to the template and connect the ends.&#x27;;
  $(&#x27;#dc-feedback&#x27;).textContent=feedback;
  $(&#x27;#dc-details&#x27;).textContent=&#x27;Coverage &#x27;+Math.round(coverage*100)+&#x27;%  ·  Precision &#x27;+Math.round(precision*100)+&#x27;%  ·  Closure &#x27;+Math.round(closure*100)+&#x27;%&#x27;;
+ finishStroke(pass);
 }
 function location(e){let pt=pad.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(pad.getScreenCTM().inverse());}
 function add(e){const p=location(e);if(!points.length||dist(p,points[points.length-1])&gt;=1)points.push({x:p.x,y:p.y});$(&#x27;#dc-ink&#x27;).setAttribute(&#x27;d&#x27;,path(points));}
