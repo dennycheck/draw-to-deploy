@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Draw to Deploy — Test Range</title>
+<title>Draw to Deploy — Vertical Test Range</title>
 <style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
 </head>
 <body>
-<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Draw to Deploy — Test Range" srcdoc="&lt;!doctype html&gt;
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Draw to Deploy — Vertical Test Range" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;en&quot; data-visualize-standalone&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
 &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
 &lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
-&lt;title&gt;Draw to Deploy — Test Range&lt;/title&gt;
+&lt;title&gt;Draw to Deploy — Vertical Test Range&lt;/title&gt;
 &lt;style&gt;:root {
   color-scheme: light dark;
   background-color: var(
@@ -1037,14 +1037,20 @@ html&gt;body{padding:0}&lt;/style&gt;
 &lt;body&gt;
 &lt;div id=&quot;drawing-calibration&quot;&gt;
   &lt;style&gt;
-    #drawing-calibration .range-panels {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:16px}
+    #drawing-calibration .range-panels {display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto;gap:0;margin-top:16px;position:relative}
     #drawing-calibration .range-panels section {min-width:0}
-    #drawing-calibration .play-surface {display:block;width:100%;height:340px}
+    #drawing-calibration .range-panels section[aria-label=&quot;Live test range&quot;] {grid-area:1/1}
+    #drawing-calibration .range-panels section[aria-label=&quot;Drawing panel&quot;] {grid-area:1/1;align-self:end;justify-self:start;z-index:2;width:min(46%,360px);margin:0 0 24px 24px;pointer-events:none}
+    #drawing-calibration .range-panels section[aria-label=&quot;Drawing panel&quot;] &gt; * {pointer-events:auto}
+    #drawing-calibration .play-surface {display:block;width:100%;height:560px}
+    #drawing-calibration .range-panels section[aria-label=&quot;Live test range&quot;] &gt; .card {border:1px solid var(--border);background:color-mix(in srgb,var(--card) 82%, transparent);backdrop-filter:blur(3px)}
+    #drawing-calibration .range-panels section[aria-label=&quot;Drawing panel&quot;] h3 {display:none}
+    #drawing-calibration .range-panels section[aria-label=&quot;Drawing panel&quot;] .card {box-shadow:0 10px 30px color-mix(in srgb,var(--foreground) 14%, transparent)}
     #drawing-calibration .drawing-surface {position:relative}
     #drawing-calibration .stroke-feedback {position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:8px;pointer-events:none;opacity:0;color:var(--foreground)}
     #drawing-calibration .stroke-feedback[data-outcome=&quot;failure&quot;] {color:var(--red)}
     #drawing-calibration .feedback-symbol {font-size:64px;line-height:1;background:var(--card);border-radius:50%;width:88px;height:88px;display:grid;place-items:center}
-    @media(max-width:650px){#drawing-calibration .range-panels{grid-template-columns:1fr}#drawing-calibration .play-surface{height:300px}}
+    @media(max-width:650px){#drawing-calibration .range-panels section[aria-label=&quot;Drawing panel&quot;]{width:calc(100% - 32px);margin:0 16px 16px}.play-surface{height:520px!important}}
   &lt;/style&gt;
   &lt;div class=&quot;viz-controls&quot;&gt;
     &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-shape=&quot;circle&quot; aria-pressed=&quot;true&quot;&gt;Circle · Infantry&lt;/button&gt;
@@ -1090,32 +1096,33 @@ function svgEl(tag,attrs,parent){const el=document.createElementNS(ns,tag);for(c
 function layoutRange(){
  const box=arena.getBoundingClientRect();rangeWidth=box.width||400;rangeHeight=box.height||340;arena.setAttribute(&#x27;viewBox&#x27;,`0 0 ${rangeWidth} ${rangeHeight}`);
  const field=$(&#x27;#dc-field&#x27;);field.replaceChildren();
- for(let i=0;i&lt;5;i++){const y=78+i*43;svgEl(&#x27;line&#x27;,{x1:18,y1:y,x2:rangeWidth-36,y2:y,stroke:&#x27;var(--border)&#x27;,&#x27;stroke-width&#x27;:1},field);}
- svgEl(&#x27;line&#x27;,{x1:rangeWidth*.36,y1:48,x2:rangeWidth*.36,y2:282,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1,&#x27;stroke-dasharray&#x27;:&#x27;4 6&#x27;},field);
- svgEl(&#x27;rect&#x27;,{x:rangeWidth-36,y:48,width:18,height:235,rx:3,fill:&#x27;var(--muted-foreground)&#x27;,opacity:.45},field);
- for(const [x,y,label] of [[18,28,&#x27;Spawn&#x27;],[rangeWidth*.36,310,&#x27;Firing line&#x27;],[rangeWidth-18,28,&#x27;Target&#x27;]]){const t=svgEl(&#x27;text&#x27;,{x,y,fill:&#x27;var(--foreground)&#x27;,&#x27;text-anchor&#x27;:label===&#x27;Target&#x27;?&#x27;end&#x27;:label===&#x27;Firing line&#x27;?&#x27;middle&#x27;:&#x27;start&#x27;},field);t.textContent=label;}
+ for(let i=0;i&lt;5;i++){const x=laneX(i);svgEl(&#x27;line&#x27;,{x1:x,y1:42,x2:x,y2:rangeHeight-38,stroke:&#x27;var(--border)&#x27;,&#x27;stroke-width&#x27;:1},field);}
+ svgEl(&#x27;line&#x27;,{x1:18,y1:rangeHeight*.48,x2:rangeWidth-36,y2:rangeHeight*.48,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1,&#x27;stroke-dasharray&#x27;:&#x27;4 6&#x27;},field);
+ svgEl(&#x27;rect&#x27;,{x:18,y:25,width:rangeWidth-54,height:16,rx:3,fill:&#x27;var(--muted-foreground)&#x27;,opacity:.45},field);
+ for(const [x,y,label,anchor] of [[18,rangeHeight-16,&#x27;Spawn / draw&#x27;,&#x27;start&#x27;],[rangeWidth/2,rangeHeight*.48-8,&#x27;Firing line&#x27;,&#x27;middle&#x27;],[rangeWidth-18,18,&#x27;Target wall&#x27;,&#x27;end&#x27;]]){const t=svgEl(&#x27;text&#x27;,{x,y,fill:&#x27;var(--foreground)&#x27;,&#x27;text-anchor&#x27;:anchor},field);t.textContent=label;}
 }
+function laneX(lane){return 50+lane*(rangeWidth-100)/4;}
 function deploy(type,power){
  const lane=deployed%5;deployed++;const el=svgEl(&#x27;g&#x27;,{},$(&#x27;#dc-units&#x27;));const color=type===&#x27;circle&#x27;?&#x27;var(--viz-series-1)&#x27;:&#x27;var(--viz-series-2)&#x27;;
  if(type===&#x27;circle&#x27;)svgEl(&#x27;circle&#x27;,{r:9,fill:color},el);else svgEl(&#x27;polygon&#x27;,{points:&#x27;0,-10 10,8 -10,8&#x27;,fill:color},el);
  const title=svgEl(&#x27;title&#x27;,{},el);title.textContent=(type===&#x27;circle&#x27;?&#x27;Infantry&#x27;:&#x27;Archer&#x27;)+&#x27; · &#x27;+power.toFixed(2)+&#x27;× power&#x27;;
- units.push({type,power,lane,x:0,shots:0,cooldown:0,el});$(&#x27;#dc-deployed&#x27;).textContent=deployed+&#x27; deployed&#x27;;startLoop();
+ units.push({type,power,lane,y:0,shots:0,cooldown:0,el});$(&#x27;#dc-deployed&#x27;).textContent=deployed+&#x27; deployed&#x27;;startLoop();
 }
 function hit(damage,lane){
  total+=damage;$(&#x27;#dc-damage&#x27;).textContent=total.toFixed(1)+&#x27; damage&#x27;;$(&#x27;#dc-last-hit&#x27;).textContent=&#x27;Last hit: &#x27;+damage.toFixed(1)+&#x27; damage&#x27;;
- const el=svgEl(&#x27;text&#x27;,{fill:&#x27;var(--foreground)&#x27;,&#x27;text-anchor&#x27;:&#x27;end&#x27;},$(&#x27;#dc-hits&#x27;));el.textContent=&#x27;+&#x27;+damage.toFixed(1);hits.push({lane,life:1.1,el});
+ const el=svgEl(&#x27;text&#x27;,{fill:&#x27;var(--foreground)&#x27;,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},$(&#x27;#dc-hits&#x27;));el.textContent=&#x27;+&#x27;+damage.toFixed(1);hits.push({lane,life:1.1,el});
 }
 function startLoop(){if(!frame){lastTime=performance.now();frame=requestAnimationFrame(tick);}}
 function tick(now){
  frame=0;const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;
  for(const u of units){
-  if(u.type===&#x27;circle&#x27;){u.x+=dt*.23;if(u.x&gt;=1){hit(20*u.power,u.lane);u.dead=true;}}
-  else if(u.x&lt;.34)u.x=Math.min(.34,u.x+dt*.20);
-  else{u.cooldown-=dt;if(u.cooldown&lt;=0&amp;&amp;u.shots&lt;5){u.shots++;u.cooldown=.85;const el=svgEl(&#x27;path&#x27;,{d:&#x27;M-11 0H5M0 -4L5 0L0 4&#x27;,fill:&#x27;none&#x27;,stroke:&#x27;var(--viz-series-2)&#x27;,&#x27;stroke-width&#x27;:2},$(&#x27;#dc-arrows&#x27;));arrows.push({x:u.x,lane:u.lane,damage:7*u.power,el});}if(u.shots===5&amp;&amp;u.cooldown&lt;=0)u.dead=true;}
-  u.el.setAttribute(&#x27;transform&#x27;,`translate(${22+u.x*(rangeWidth-65)},${78+u.lane*43})`);
+  if(u.type===&#x27;circle&#x27;){u.y+=dt*.23;if(u.y&gt;=1){hit(20*u.power,u.lane);u.dead=true;}}
+  else if(u.y&lt;.34)u.y=Math.min(.34,u.y+dt*.20);
+  else{u.cooldown-=dt;if(u.cooldown&lt;=0&amp;&amp;u.shots&lt;5){u.shots++;u.cooldown=.85;const el=svgEl(&#x27;path&#x27;,{d:&#x27;M0 11V-5M-4 0L0 -5L4 0&#x27;,fill:&#x27;none&#x27;,stroke:&#x27;var(--viz-series-2)&#x27;,&#x27;stroke-width&#x27;:2},$(&#x27;#dc-arrows&#x27;));arrows.push({y:u.y,lane:u.lane,damage:7*u.power,el});}if(u.shots===5&amp;&amp;u.cooldown&lt;=0)u.dead=true;}
+  u.el.setAttribute(&#x27;transform&#x27;,`translate(${laneX(u.lane)},${rangeHeight-52-u.y*(rangeHeight-104)})`);
  }
- for(const a of arrows){a.x+=dt*.9;if(a.x&gt;=1){hit(a.damage,a.lane);a.dead=true;}a.el.setAttribute(&#x27;transform&#x27;,`translate(${22+a.x*(rangeWidth-65)},${78+a.lane*43})`);}
- for(const h of hits){h.life-=dt;h.el.setAttribute(&#x27;x&#x27;,rangeWidth-43);h.el.setAttribute(&#x27;y&#x27;,68+h.lane*43-(reduced?0:(1.1-h.life)*18));h.el.setAttribute(&#x27;opacity&#x27;,Math.min(1,h.life*2));if(h.life&lt;=0)h.dead=true;}
+ for(const a of arrows){a.y+=dt*.9;if(a.y&gt;=1){hit(a.damage,a.lane);a.dead=true;}a.el.setAttribute(&#x27;transform&#x27;,`translate(${laneX(a.lane)},${rangeHeight-52-a.y*(rangeHeight-104)})`);}
+ for(const h of hits){h.life-=dt;h.el.setAttribute(&#x27;x&#x27;,laneX(h.lane));h.el.setAttribute(&#x27;y&#x27;,38-(reduced?0:(1.1-h.life)*18));h.el.setAttribute(&#x27;opacity&#x27;,Math.min(1,h.life*2));if(h.life&lt;=0)h.dead=true;}
  for(const list of [units,arrows,hits])for(const item of list)if(item.dead)item.el.remove();
  units=units.filter(u=&gt;!u.dead);arrows=arrows.filter(a=&gt;!a.dead);hits=hits.filter(h=&gt;!h.dead);
  if(root.isConnected&amp;&amp;(units.length||arrows.length||hits.length))frame=requestAnimationFrame(tick);
